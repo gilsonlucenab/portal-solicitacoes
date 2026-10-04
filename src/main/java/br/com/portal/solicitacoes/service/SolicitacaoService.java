@@ -52,6 +52,19 @@ public class SolicitacaoService {
         return solicitacaoRepository.save(solicitacao);
     }
     @Transactional
+    public Solicitacao editar(
+        Long id,
+        SolicitacaoRequest request) {
+
+    Solicitacao solicitacao = buscarPorId(id);
+
+    solicitacao.setTitulo(request.titulo());
+    solicitacao.setDescricao(request.descricao());
+    solicitacao.setCategoria(request.categoria().name());
+
+    return solicitacaoRepository.save(solicitacao);
+    }
+    @Transactional
     public Solicitacao atualizarStatus(Long id, String novoStatus) {
     Solicitacao solicitacao = buscarPorId(id);
 

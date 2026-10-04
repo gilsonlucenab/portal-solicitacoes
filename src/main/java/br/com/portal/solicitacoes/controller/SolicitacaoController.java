@@ -8,9 +8,6 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.List;
 import java.util.Map;
@@ -53,6 +50,16 @@ public class SolicitacaoController {
         );
 
         return converterParaResponse(solicitacao);
+    }
+
+    @PutMapping("/{id}")
+    public SolicitacaoResponse editar(
+        @PathVariable Long id,
+        @Valid @RequestBody SolicitacaoRequest request) {
+
+    Solicitacao solicitacao = solicitacaoService.editar(id, request);
+
+    return converterParaResponse(solicitacao);
     }
 
     @PutMapping("/{id}/status")

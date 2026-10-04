@@ -72,9 +72,7 @@ public class SecurityConfig {
                 .csrfTokenRequestHandler(
                     new SpaCsrfTokenRequestHandler()
                 )
-                .ignoringRequestMatchers("/api/auth/cadastro",
-                    "/api/solicitacoes/**"
-                )
+                .ignoringRequestMatchers("/api/auth/cadastro")
             )
 
             .authorizeHttpRequests(auth -> auth

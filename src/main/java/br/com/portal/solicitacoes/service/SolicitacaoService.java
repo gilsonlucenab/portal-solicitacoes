@@ -69,11 +69,6 @@ public class SolicitacaoService {
     public void excluir(Long id) {
         Solicitacao solicitacao = buscarPorId(id);
 
-        if (!"ABERTO".equals(solicitacao.getStatus())) {
-            throw new IllegalStateException(
-                    "Só é possível excluir solicitações abertas");
-        }
-
         solicitacaoRepository.delete(solicitacao);
     }
 }

@@ -51,6 +51,19 @@ public class SolicitacaoService {
 
         return solicitacaoRepository.save(solicitacao);
     }
+    @Transactional
+    public Solicitacao atualizarStatus(Long id, String novoStatus) {
+    Solicitacao solicitacao = buscarPorId(id);
+
+    if (!List.of("ABERTO", "EM_ATENDIMENTO", "CONCLUIDO")
+            .contains(novoStatus)) {
+        throw new IllegalArgumentException("Status inválido");
+    }
+
+    solicitacao.setStatus(novoStatus);
+
+    return solicitacaoRepository.save(solicitacao);
+    }
 
     @Transactional
     public void excluir(Long id) {

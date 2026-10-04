@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/solicitacoes")
@@ -49,6 +50,25 @@ public class SolicitacaoController {
         );
 
         return converterParaResponse(solicitacao);
+    }
+
+    @PutMapping("/{id}/status")
+    public SolicitacaoResponse atualizarStatus(
+        @PathVariable Long id,
+        @RequestBody Map<String, String> body) {
+
+    Solicitacao solicitacao = solicitacaoService.atualizarStatus(
+            id,
+            body.get("status")
+    );
+
+    return converterParaResponse(solicitacao);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void excluir(@PathVariable Long id) {
+    solicitacaoService.excluir(id);
     }
 
     private SolicitacaoResponse converterParaResponse(

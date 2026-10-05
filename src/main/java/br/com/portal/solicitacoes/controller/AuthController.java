@@ -6,6 +6,8 @@ import br.com.portal.solicitacoes.service.UsuarioService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,4 +47,19 @@ public class AuthController {
                 CsrfToken.class.getName()
         );
     }
+
+    @GetMapping("/me")
+public Map<String, Object> usuarioAtual(
+        Authentication authentication) {
+
+    boolean autenticado =
+            authentication != null
+            && authentication.isAuthenticated()
+            && !"anonymousUser".equals(authentication.getName());
+
+    return Map.of(
+            "usuario", authentication.getName(),
+            "autenticado", autenticado
+    );
+}
 }

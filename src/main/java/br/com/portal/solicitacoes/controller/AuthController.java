@@ -3,8 +3,10 @@ package br.com.portal.solicitacoes.controller;
 import br.com.portal.solicitacoes.dto.UsuarioCadastroRequest;
 import br.com.portal.solicitacoes.entity.Usuario;
 import br.com.portal.solicitacoes.service.UsuarioService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -34,6 +36,13 @@ public class AuthController {
                 "id", usuario.getId(),
                 "nome", usuario.getNome(),
                 "usuario", usuario.getUsuario()
+        );
+    }
+
+    @GetMapping("/csrf")
+    public CsrfToken csrf(HttpServletRequest request) {
+        return (CsrfToken) request.getAttribute(
+                CsrfToken.class.getName()
         );
     }
 }

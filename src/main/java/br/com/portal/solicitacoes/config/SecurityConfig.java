@@ -5,7 +5,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.function.Supplier;
-
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -59,24 +60,37 @@ public class SecurityConfig {
                     .resolveCsrfTokenValue(request, csrfToken);
         }
     }
+    @Bean
+public SecurityContextRepository securityContextRepository() {
+    return new HttpSessionSecurityContextRepository();
+}
 
     @Bean
-    public SecurityFilterChain securityFilterChain(
-            HttpSecurity http) throws Exception {
+public SecurityFilterChain securityFilterChain(
+        HttpSecurity http,
+        SecurityContextRepository securityContextRepository) throws Exception {
 
         http
-            .csrf(csrf -> csrf
+    .cors(cors -> {})
+    .securityContext(securityContext -> securityContext
+        .securityContextRepository(securityContextRepository)
+    )
+    .csrf(csrf -> csrf
                 .csrfTokenRepository(
                     CookieCsrfTokenRepository.withHttpOnlyFalse()
                 )
                 .csrfTokenRequestHandler(
                     new SpaCsrfTokenRequestHandler()
                 )
-                .ignoringRequestMatchers("/api/auth/cadastro")
+                .ignoringRequestMatchers(
+        "/api/auth/cadastro",
+        "/login"
+    )
             )
 
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/auth/csrf").permitAll()
                 .requestMatchers(
                     "/swagger-ui/**",
                     "/swagger-ui.html",
@@ -86,7 +100,19 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
 
-            .formLogin(form -> form.permitAll())
+            .formLogin(form -> form
+                .loginProcessingUrl("/login")
+                .successHandler((request, response, authentication) -> {
+    System.out.println("LOGIN REALIZADO: " + authentication.getName());
+    System.out.println("AUTENTICADO: " + authentication.isAuthenticated());
+
+    response.setStatus(HttpServletResponse.SC_OK);
+})
+                .failureHandler((request, response, exception) -> {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                })
+                .permitAll()
+            )
 
             .logout(logout -> logout
                 .logoutUrl("/logout")

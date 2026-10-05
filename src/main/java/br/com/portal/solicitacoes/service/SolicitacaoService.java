@@ -52,18 +52,21 @@ public class SolicitacaoService {
         return solicitacaoRepository.save(solicitacao);
     }
     @Transactional
-    public Solicitacao editar(
-        Long id,
-        SolicitacaoRequest request) {
-
+public Solicitacao editar(Long id, SolicitacaoRequest request) {
     Solicitacao solicitacao = buscarPorId(id);
+
+    if ("CONCLUIDO".equals(solicitacao.getStatus())) {
+        throw new IllegalStateException(
+            "Não é possível editar uma solicitação concluída."
+        );
+    }
 
     solicitacao.setTitulo(request.titulo());
     solicitacao.setDescricao(request.descricao());
     solicitacao.setCategoria(request.categoria().name());
 
     return solicitacaoRepository.save(solicitacao);
-    }
+}
     @Transactional
     public Solicitacao atualizarStatus(Long id, String novoStatus) {
     Solicitacao solicitacao = buscarPorId(id);
